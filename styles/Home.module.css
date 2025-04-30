@@ -1,0 +1,23 @@
+
+.container {
+  min-height: 100vh;
+  padding: 0 2rem;
+  background: #0f0f0f;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main {
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.title {
+  font-size: 4rem;
+  color: #00ffff;
+}
+
+.description {
+  font-size: 1.5rem;
+  color: #ccc;
+}
