@@ -1,56 +1,36 @@
-# Portfolio Website
+# Modern Portfolio Web Application
 
-A modern, responsive portfolio website built with Next.js and Express.js. Showcase your projects, skills, and professional information with a sleek dark theme and smooth animations.
+A sleek, modern portfolio website built with Next.js and Express.js, featuring a beautiful carousel, admin dashboard, and project management system.
 
-![Portfolio Preview](https://via.placeholder.com/800x400?text=Portfolio+Preview)
+## Features
 
-## 🚀 Features
+- 🎨 Modern, responsive design with dark theme
+- 🎮 Interactive project carousel with smooth animations
+- 📱 Mobile-friendly layout
+- 🔐 Secure admin dashboard
+- 📊 Project management system
+- 🎯 Category-based project filtering
+- 🖼️ Image and video support
+- ⚡ Fast performance with Next.js
+- 🔄 Real-time updates
 
-- **Modern Design**
-  - Sleek dark theme
-  - Smooth animations with Framer Motion
-  - Fully responsive layout
-  - Custom scrollbar
+## Tech Stack
 
-- **Project Showcase**
-  - Dynamic project cards
-  - GitHub and live demo links
-  - Technology tags
-  - Project filtering
-
-- **Skills Section**
-  - Categorized skills display
-  - Interactive skill cards
-  - Progress indicators
-
-- **Contact Form**
-  - Clean, modern design
-  - Form validation
-  - Social media links
-  - Direct email contact
-
-- **Performance**
-  - Optimized images
-  - Lazy loading
-  - Server-side rendering
-  - Fast API responses
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Framework**: Next.js
+- **Frontend**: Next.js, React, Tailwind CSS, Framer Motion
+- **Backend**: Express.js, Node.js
+- **Authentication**: JWT
+- **Data Storage**: CSV (easily upgradable to database)
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
-- **Icons**: React Icons
-- **State Management**: React Hooks
 
-### Backend
-- **Server**: Express.js
-- **API**: RESTful
-- **Storage**: File-based JSON
-- **CORS**: Enabled for security
+## Getting Started
 
-## 📦 Installation
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
 
 1. Clone the repository:
    ```bash
@@ -65,93 +45,90 @@ A modern, responsive portfolio website built with Next.js and Express.js. Showca
    yarn install
    ```
 
-3. Create environment variables:
-   ```bash
-   # .env.local
+3. Create a `.env.local` file in the root directory:
+   ```
    NEXT_PUBLIC_API_URL=http://localhost:3001
+   JWT_SECRET=your-secret-key
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD=admin123
    ```
 
-4. Start development servers:
+4. Start the development servers:
    ```bash
-   npm run dev:all
-   # or
-   yarn dev:all
+   # Terminal 1 - Backend
+   cd backend
+   npm start
+
+   # Terminal 2 - Frontend
+   npm run dev
    ```
 
-## 🏗️ Project Structure
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Project Structure
 
 ```
 portfolio-web-app/
-├── components/         # React components
-│   ├── Contact.js     # Contact form component
-│   ├── Hero.js        # Hero section
-│   ├── Navbar.js      # Navigation bar
-│   ├── ProjectCard.js # Project display card
-│   └── Skills.js      # Skills section
-├── pages/             # Next.js pages
-│   └── index.js       # Main page
-├── public/            # Static assets
-├── styles/            # Global styles
-│   └── globals.css    # Global CSS
-├── backend/           # Express server
-│   ├── data/         # Project data storage
-│   └── server.js     # Express server
-├── package.json       # Dependencies
-└── README.md         # Documentation
+├── components/          # React components
+│   ├── AdminDashboard.js
+│   ├── ProjectCarousel.js
+│   ├── ProjectCard.js
+│   ├── Navbar.js
+│   ├── Hero.js
+│   ├── Skills.js
+│   └── Contact.js
+├── pages/              # Next.js pages
+│   ├── index.js
+│   └── admin.js
+├── public/             # Static assets
+│   ├── project-images/
+│   └── project-videos/
+├── backend/            # Express server
+│   ├── server.js
+│   └── data/
+├── styles/             # Global styles
+└── package.json
 ```
 
-## 🔧 Configuration
+## Admin Dashboard
 
-### Backend Configuration
-- Port: 3001 (configurable via PORT environment variable)
-- CORS: Configured for frontend URL
-- Data Storage: JSON file-based
+Access the admin dashboard at `/admin` to:
+- Add new projects
+- Edit existing projects
+- Delete projects
+- Manage project categories
+- Upload project images and videos
 
-### Frontend Configuration
-- API URL: Configurable via NEXT_PUBLIC_API_URL
-- Theme: Customizable through Tailwind config
-- Animations: Adjustable in component files
+Default admin credentials:
+- Username: admin
+- Password: admin123
 
-## 📝 API Documentation
+## Adding Projects
 
-### Projects API
+1. Log in to the admin dashboard
+2. Click "Add New Project"
+3. Fill in the project details:
+   - Title
+   - Category
+   - Description
+   - Technologies
+   - Image URL
+   - Video URL (optional)
+4. Click "Add Project"
 
-- **GET** `/api/projects`
-  - Returns all projects
-  - Response: Array of project objects
+## Customization
 
-- **GET** `/api/projects/:id`
-  - Returns a specific project
-  - Response: Project object
+### Styling
+- Edit `tailwind.config.js` for theme customization
+- Modify components in the `components/` directory
+- Update global styles in `styles/`
 
-- **POST** `/api/projects`
-  - Creates a new project
-  - Required fields: title, description
-  - Optional fields: technologies, imageUrl, githubUrl, liveUrl
+### Configuration
+- Update environment variables in `.env.local`
+- Modify API endpoints in `backend/server.js`
+- Adjust carousel settings in `components/ProjectCarousel.js`
 
-- **PUT** `/api/projects/:id`
-  - Updates an existing project
-  - All fields optional
-
-- **DELETE** `/api/projects/:id`
-  - Deletes a project
-  - Returns 204 on success
-
-## 🚀 Deployment
-
-### Frontend (Vercel)
-1. Push to GitHub
-2. Import to Vercel
-3. Configure environment variables
-4. Deploy
-
-### Backend (Railway)
-1. Push to GitHub
-2. Import to Railway
-3. Configure environment variables
-4. Deploy
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -159,19 +136,10 @@ portfolio-web-app/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Support
 
-- [Next.js](https://nextjs.org/) - React framework
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Framer Motion](https://www.framer.com/motion/) - Animation library
-- [React Icons](https://react-icons.github.io/react-icons/) - Icon library
-
-## 📞 Contact
-
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - email@example.com
-
-Project Link: [https://github.com/yourusername/portfolio-web-app](https://github.com/yourusername/portfolio-web-app)
+For support, email support@example.com or open an issue in the repository.

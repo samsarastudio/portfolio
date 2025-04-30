@@ -3,6 +3,8 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parse');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -14,6 +16,13 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.static('public'));
+
+// JWT Secret
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Admin credentials (in production, use environment variables)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 // CSV file path
 const csvFilePath = path.join(__dirname, 'Portfolio_Project_Categories.csv');
@@ -39,6 +48,99 @@ const readProjects = () => {
       .on('error', reject);
   });
 };
+
+// Function to write projects to CSV
+const writeProjects = async (projects) => {
+  const csvData = projects.map(project => ({
+    Project: project.title,
+    Category: project.category,
+    Description: project.description
+  }));
+  
+  const csvString = csvData.map(row => 
+    Object.values(row).map(value => `"${value}"`).join(',')
+  ).join('\n');
+  
+  await fs.promises.writeFile(csvFilePath, 'Project,Category,Description\n' + csvString);
+};
+
+// Admin authentication middleware
+const authenticateAdmin = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.username !== ADMIN_USERNAME) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// Admin login
+app.post('/api/admin/login', async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+  } else {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
+});
+
+// Admin routes
+app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const newProject = {
+      id: req.body.title.replace(/\s+/g, '-').toLowerCase(),
+      ...req.body
+    };
+    projects.push(newProject);
+    await writeProjects(projects);
+    res.json(newProject);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add project' });
+  }
+});
+
+app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const index = projects.findIndex(p => p.id === req.params.id);
+    if (index === -1) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    projects[index] = {
+      ...projects[index],
+      ...req.body,
+      id: req.body.title ? req.body.title.replace(/\s+/g, '-').toLowerCase() : projects[index].id
+    };
+    
+    await writeProjects(projects);
+    res.json(projects[index]);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update project' });
+  }
+});
+
+app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const filteredProjects = projects.filter(p => p.id !== req.params.id);
+    await writeProjects(filteredProjects);
+    res.json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete project' });
+  }
+});
 
 // Get all categories
 app.get('/api/categories', async (req, res) => {

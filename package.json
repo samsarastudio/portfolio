@@ -1,30 +1,30 @@
 {
-  "name": "unity-portfolio",
-  "version": "1.0.0",
-  "description": "A Unity-based portfolio website showcasing interactive projects",
-  "main": "server.js",
+  "name": "portfolio-web-app",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "server": "node backend/server.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run server\""
+    "lint": "next lint"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "framer-motion": "^10.16.0",
-    "react-icons": "^4.11.0",
-    "tailwindcss": "^3.3.0",
+    "next": "^12.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "framer-motion": "^6.0.0",
+    "react-icons": "^4.3.1",
+    "tailwindcss": "^3.0.0",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
-    "csv-parse": "^5.5.0",
-    "react-unity-webgl": "^9.4.0"
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1",
+    "csv-parse": "^5.0.0",
+    "express": "^4.17.1",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^12.0.0"
   }
 }
