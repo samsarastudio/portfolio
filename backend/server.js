@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const csv = require('csv-parse');
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -14,93 +15,81 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static('public'));
 
-// Data file path
-const dataFilePath = path.join(__dirname, 'data', 'projects.json');
+// CSV file path
+const csvFilePath = path.join(__dirname, 'Portfolio_Project_Categories.csv');
 
-// Ensure data directory exists
-if (!fs.existsSync(path.join(__dirname, 'data'))) {
-  fs.mkdirSync(path.join(__dirname, 'data'));
-}
-
-// Initialize projects array
-let projects = [];
-
-// Load existing projects
-try {
-  if (fs.existsSync(dataFilePath)) {
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    projects = JSON.parse(data);
-  }
-} catch (error) {
-  console.error('Error loading projects:', error);
-}
-
-// Save projects to file
-const saveProjects = () => {
-  try {
-    fs.writeFileSync(dataFilePath, JSON.stringify(projects, null, 2));
-  } catch (error) {
-    console.error('Error saving projects:', error);
-  }
+// Function to read and parse CSV
+const readProjects = () => {
+  return new Promise((resolve, reject) => {
+    const projects = [];
+    fs.createReadStream(csvFilePath)
+      .pipe(csv.parse({ columns: true, trim: true }))
+      .on('data', (row) => {
+        projects.push({
+          id: row.Project.replace(/\s+/g, '-').toLowerCase(),
+          title: row.Project,
+          category: row.Category,
+          description: row.Description,
+          technologies: ['Unity', 'C#'],
+          imageUrl: `/project-images/${row.Project.replace(/\s+/g, '-').toLowerCase()}.jpg`,
+          videoUrl: `/project-videos/${row.Project.replace(/\s+/g, '-').toLowerCase()}.mp4`,
+        });
+      })
+      .on('end', () => resolve(projects))
+      .on('error', reject);
+  });
 };
 
-// API Routes
-app.get('/api/projects', (req, res) => {
-  res.json(projects);
+// Get all categories
+app.get('/api/categories', async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const categories = [...new Set(projects.map(p => p.category))].sort();
+    res.json(categories);
+  } catch (error) {
+    console.error('Error reading categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
 });
 
-app.get('/api/projects/:id', (req, res) => {
-  const project = projects.find(p => p.id === req.params.id);
-  if (!project) {
-    return res.status(404).json({ error: 'Project not found' });
+// Get all projects
+app.get('/api/projects', async (req, res) => {
+  try {
+    const projects = await readProjects();
+    res.json(projects);
+  } catch (error) {
+    console.error('Error reading projects:', error);
+    res.status(500).json({ error: 'Failed to fetch projects' });
   }
-  res.json(project);
 });
 
-app.post('/api/projects', (req, res) => {
-  const { title, description, technologies, imageUrl, githubUrl, liveUrl } = req.body;
-  
-  if (!title || !description) {
-    return res.status(400).json({ error: 'Title and description are required' });
+// Get projects by category
+app.get('/api/projects/category/:category', async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const categoryProjects = projects.filter(p => 
+      p.category.toLowerCase() === req.params.category.toLowerCase()
+    );
+    res.json(categoryProjects);
+  } catch (error) {
+    console.error('Error reading projects:', error);
+    res.status(500).json({ error: 'Failed to fetch projects' });
   }
-
-  const newProject = {
-    id: Date.now().toString(),
-    title,
-    description,
-    technologies: technologies || [],
-    imageUrl: imageUrl || '',
-    githubUrl: githubUrl || '',
-    liveUrl: liveUrl || '',
-    createdAt: new Date().toISOString()
-  };
-
-  projects.push(newProject);
-  saveProjects();
-  res.status(201).json(newProject);
 });
 
-app.put('/api/projects/:id', (req, res) => {
-  const index = projects.findIndex(p => p.id === req.params.id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Project not found' });
+// Get project by ID
+app.get('/api/projects/:id', async (req, res) => {
+  try {
+    const projects = await readProjects();
+    const project = projects.find(p => p.id === req.params.id);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.json(project);
+  } catch (error) {
+    console.error('Error reading project:', error);
+    res.status(500).json({ error: 'Failed to fetch project' });
   }
-
-  const updatedProject = { ...projects[index], ...req.body };
-  projects[index] = updatedProject;
-  saveProjects();
-  res.json(updatedProject);
-});
-
-app.delete('/api/projects/:id', (req, res) => {
-  const index = projects.findIndex(p => p.id === req.params.id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Project not found' });
-  }
-
-  projects.splice(index, 1);
-  saveProjects();
-  res.status(204).send();
 });
 
 // Error handling middleware

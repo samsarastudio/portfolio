@@ -1,7 +1,7 @@
 {
-  "name": "portfolio-web-app",
+  "name": "unity-portfolio",
   "version": "1.0.0",
-  "description": "A modern portfolio website with dark theme",
+  "description": "A Unity-based portfolio website showcasing interactive projects",
   "main": "server.js",
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,9 @@
     "react-icons": "^4.11.0",
     "tailwindcss": "^3.3.0",
     "postcss": "^8.4.0",
-    "autoprefixer": "^10.4.0"
+    "autoprefixer": "^10.4.0",
+    "csv-parse": "^5.5.0",
+    "react-unity-webgl": "^9.4.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
